@@ -27,18 +27,19 @@ namespace Microsoft.EntityFrameworkCore
         /// Ensures the automatic history.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static void EnsureAutoHistory(this DbContext context)
+        /// <param name="user">The user making the change.</param>
+        public static void EnsureAutoHistory(this DbContext context, string user = "")
         {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
             var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
             foreach (var entry in entries)
             {
-                context.Add(entry.AutoHistory());
+                context.Add(entry.AutoHistory(user));
             }
         }
 
-        internal static AutoHistory AutoHistory(this EntityEntry entry)
+        internal static AutoHistory AutoHistory(this EntityEntry entry, string user)
         {
             var history = new AutoHistory
             {
@@ -68,6 +69,7 @@ namespace Microsoft.EntityFrameworkCore
                     history.RowId = "0";
                     history.Kind = EntityState.Added;
                     history.Changed = json.ToString();
+                    history.User = user;
                     break;
                 case EntityState.Modified:
                     var bef = new JObject();

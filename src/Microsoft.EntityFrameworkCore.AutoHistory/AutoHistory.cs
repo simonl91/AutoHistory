@@ -44,5 +44,11 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Gets or serts the user.
+        /// </summary>
+        /// <value>The User that made the change.</value>
+        public string User { get; set; }
     }
 }
